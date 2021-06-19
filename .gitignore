@@ -1,0 +1,12 @@
+vamakp.pem
+*vamakp
+vamakp*
+***vamakp.pem
+*.terraform
+*terra*
+***.pem
+/ansible/*.pem
+/launch_ec2/*.pem
+/launch_ec2/*.terr
+/launch_ec2/.ter*
+/orig_launch_ec2/*.pem

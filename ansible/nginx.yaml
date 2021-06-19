@@ -1,0 +1,41 @@
+---
+- name: Install Nginx
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  vars:
+    nginx_container_port: "8080"
+    nginx_port: "80"
+    docker_compose_version: "1.27.4"
+    ansible_user: "ubuntu"
+    default_container_image: nginx
+    # playbook_dir: 
+    # docker_remote_app_dir: /tmp/helloworld
+    docker_remote_app_dir: /home/ubuntu/nginx-docker-compose
+    rabbitmq_cluster_dir: /home/ubuntu/rabbitmq-cluster_docker_compose
+    node_mongo_docker: /home/ubuntu/node-mongo-docker
+  roles:
+  - nginx
+
+
+
+# # below to test out for local host
+# ---
+# - name: Install Nginx
+#   hosts: localhost
+#   connection: local 
+#   remote_user: ubuntu
+#   # become: yes
+#   vars:
+#     nginx_container_port: "8080"
+#     nginx_port: "80"
+#     docker_compose_version: "1.27.4"
+#     ansible_user: "ubuntu"
+#     default_container_image: nginx
+#     # playbook_dir: 
+#     # docker_remote_app_dir: /tmp/helloworld
+#     docker_remote_app_dir: /home/ubuntu/nginx-docker-compose
+#     rabbitmq_cluster_dir: /home/ubuntu/rabbitmq-cluster_docker_compose
+#     node_mongo_docker: /home/ubuntu/node-mongo-docker
+#   roles:
+#   - nginx

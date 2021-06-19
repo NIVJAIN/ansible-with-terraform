@@ -1,0 +1,74 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: guestbook-virtualservice
+  # namespace: default
+spec:
+  hosts: # destinations that these routing rules apply to. VirtualService must be bound to the gateway and must have one or more hosts that match the hosts specified in a server
+  - "*"
+  gateways: # using gateways field, it'll be exposed externally
+  - service-gateway # this should match with gateway's name
+  http: # L7 load balancing by http path and host, just like K8s ingress resource
+  - match:
+    - uri:
+        prefix: /
+    - uri:
+        exact: /health
+    - uri:
+        prefix: /ping
+    route:
+    - destination:
+        host: service-a # specify service name, either by relative or absolute path
+        port:
+          number: 80
+
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: guestbook-virtualservice
+#   # namespace: default
+# spec:
+#   hosts:
+#   - "*"
+#   gateways: # using gateways field, it'll be exposed externally
+#   - service-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /
+#     route:
+#     - destination:
+#         host: service-a # specify service name
+#         port:
+#           number: 80
+
+
+
+
+
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: bookinfo
+# spec:
+#   hosts: # destinations that these routing rules apply to. VirtualService must be bound to the gateway and must have one or more hosts that match the hosts specified in a server
+#   - "*"
+#   gateways:
+#   - bookinfo-gateway # this should match with gateway's name
+#   http: # L7 load balancing by http path and host, just like K8s ingress resource
+#   - match:
+#     - uri:
+#         exact: /productpage
+#     - uri:
+#         prefix: /static
+#     - uri:
+#         exact: /login
+#     - uri:
+#         exact: /logout
+#     - uri:
+#         prefix: /api/v1/products
+#     route:
+#     - destination:
+#         host: productpage # specify service name, either by relative or absolute path
+#         port:
+#           number: 9080

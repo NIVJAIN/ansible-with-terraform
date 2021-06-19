@@ -1,0 +1,27 @@
+@baseUrl=http://localhost:5000
+
+
+###
+GET {{baseUrl}}/
+###
+GET {{baseUrl}}/health
+###
+GET {{baseUrl}}/ping
+
+###
+GET {{baseUrl}}/service-b
+###
+
+GET {{baseUrl}}/service-c
+
+
+
+#  bombardier -c 125 -n 10000000 http://hello-world.info/breakfast/zsripal.jain@gmail.com
+
+# docker service ls                                                                            ✔   ▓▒░
+# ID             NAME                  MODE         REPLICAS   IMAGE                              PORTS
+# q601v7zp7liy   node-demo_app         replicated   1/1        127.0.0.1:3000/node-mongo:latest   *:3000->3000/tcp
+# wxvxphdttr9w   node-demo_mongodb     replicated   1/1        mongo:latest                       *:27017->27017/tcp
+# v1meoyof696x   node-demo_service-a   replicated   1/1        nivjain/node-srv-a:1.4.0           *:5000->3000/tcp
+# t1h59iseyymf   node-demo_service-b   replicated   1/1        nivjain/node-srv-b:1.4.0           *:6000->3000/tcp
+# okz680apmq3z   node-demo_service-c   replicated   1/1        nivjain/node-srv-c:1.4.0           *:7000->3000/tcp

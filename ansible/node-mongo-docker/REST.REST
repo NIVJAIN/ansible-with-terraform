@@ -1,0 +1,26 @@
+@baseUrl=http://localhost:3000
+# @baseUrl=http://hello-world.info
+# @baseUrl=http://jain.hello-world.info
+# @baseUrl=http://localhost:5000
+# Kubernetes url below
+# @baseUrl=http://192.168.64.2:30000 
+# @baseUrl=http://a8eb098a2a00b436f8b04b38e949e62c-1812049375.ap-southeast-1.elb.amazonaws.com
+# @baseUrl=http://a2ef7f8858cd7445ba66f7402eaee1cf-542858087.ap-southeast-1.elb.amazonaws.com
+# @baseUrl=http://nodeapp.vama-dsl.com
+###
+POST {{baseUrl}}/breakfast
+Content-Type: application/json
+
+{
+    "bananas" : 2,
+    "email" : "somasundar@gmail.com",
+    "drink" : "Coffee"
+}
+###
+#  bombardier -c 125 -n 10000000 http://hello-world.info/breakfast/zsripal.jain@gmail.com
+GET {{baseUrl}}/breakfast/somasundar@gmail.com/
+###
+GET http://hello-world.info/breakfast/zsripal.jain@gmail.com
+
+###
+GET {{baseUrl}}/service-a

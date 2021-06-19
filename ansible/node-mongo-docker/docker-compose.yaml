@@ -1,0 +1,77 @@
+# docker-compose -f legacy-elasticsearch.yml up
+version: "3.7"
+services:
+  app:
+    container_name: node-mongo
+    # image: 127.0.0.1:3000/node-mongo
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+        # MONGO_CONTAINER_NAME: "mongojain"
+        MONGO_CONTAINER_NAME: "mongodb"
+        MONGO_INITDB_ROOT_USERNAME: "jain"
+        MONGO_INITDB_ROOT_PASSWORD: "pAssw0rd"
+        MONGO_INITDB_DATABASE : "pod"
+    links:
+      - mongodb
+    # command: mongo --host mongo --eval  "db.getSiblingDB('dashboard').createUser({user:'dbuser', pwd:'dbpass', roles:[{role:'readWrite',db:'dashboard'}]});"
+    # command: ./wait-for.sh mongojain:27017 -- /usr/src/app//node_modules/.bin/nodemon server.js
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+
+# ########################### # ##########################
+#                         SERVICES                       #
+# ########################## # ##########################
+  service-a:
+      # image: nivjain/node-srv-a:1.4.0
+      build: ./services/service-a
+      networks:
+        - app-network
+      ports:
+        - 5000:80
+  service-b:
+    # image: nivjain/node-srv-b:1.4.0
+    build: ./services/service-b
+    networks:
+      - app-network
+    # ports:
+    #   - 6000:80
+  service-c:
+    # image: nivjain/node-srv-c:1.4.0
+    build: ./services/service-c
+    networks:
+      - app-network
+    # ports:
+    #   - 7000:80
+
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongojain
+    restart: always
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: "jain"
+        MONGO_INITDB_ROOT_PASSWORD: "pAssw0rd" 
+    ports:
+        - 27017:27017
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./data:/data/db
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    # driver: overlay
+    # external: true
+
+
+# volumes:
+#   data:
+#   node_modules:

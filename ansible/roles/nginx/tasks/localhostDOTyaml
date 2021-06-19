@@ -1,0 +1,13 @@
+---
+- name: Just Execute a command
+  command: date
+  register: "output" 
+- debug: var=output.stdout_lines
+
+- name: "just execute a ls -lrt command"
+  shell: "ls -lrta"
+  register: "output"
+- debug: var=output.stdout_lines
+
+
+

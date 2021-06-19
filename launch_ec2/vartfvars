@@ -1,0 +1,8 @@
+agency_name  = "na"
+project_code = "na"
+app_name     = "na"
+purpose      = "na"
+env_name     = "dev"
+bucket_name  = "terraform-terragrunt-modules-gcc"
+requestor    = "JAIN"
+creator      = "Jain"

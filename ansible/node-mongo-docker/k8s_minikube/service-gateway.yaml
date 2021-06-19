@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: service-gateway
+spec:
+  selector:  # select a standalone Envoy proxy running on a pod at the edge of service mesh
+    istio: ingressgateway # use default istio gateway proxy in `istio-system` namespace, which exposes it using K8s service of LoadBalancer, which creates AWS ELB
+  servers: # defines L7 host, port, and protocol
+  - port:
+      number: 80 # define incoming port
+      name: http # label assigned to the port
+      protocol: HTTP # define incoming protocol, could be HTTP|HTTPS|GRPC|HTTP2|MONGO|TCP|
+    hosts: # hosts exposed by this gateway
+    - "*"

@@ -1,0 +1,235 @@
+---
+# - name: Just Execute a command
+#   command: date
+#   register: "output" 
+# - debug: var=output.stdout_lines
+# - name: "just execute a ls -lrt command"
+#   shell: "ls -lrta"
+#   register: "output"
+# - name: Just Execute a command
+#   command: echo "{{ansible_user}}"
+#   register: "output"  
+# - debug: var=output.stdout_lines
+# - name: Install docker and some dependencies
+#   apt:
+#     name: python3-pip
+#     state: present
+# #   register: "output"  
+# # - debug: var=output.stdout_lines
+# - name: Install docker python module
+#   pip:
+#     name: docker
+#     register: "output"  
+# - debug: var=output.stdout_lines
+# - name: Create nginx container
+#   docker_container:
+#     name: nginx
+#     # image: nivjain/nginx:v1
+#     image: nginx
+#     state: started
+#     recreate: yes
+#     published_ports:
+#       - "{{ nginx_container_port }}:{{ nginx_port }}"
+#       # - "8080:80"
+#     register: "output"  
+# - debug: var=output.stdout_lines  
+- name: Install Docker SDK for Python
+  pip:
+    name: "docker" 
+  become: yes
+- name: Install Nginx
+  docker_container:
+    name: nginx
+    image: nginx
+    detach: True
+    ports:
+      - "8080:80"
+    expose:
+      - "8080"
+    # volumes:
+      # - /etc/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+
+# - name: Update apt cache
+#   apt: update_cache=yes cache_valid_time=3600
+
+# - name: Upgrade all apt packages
+#   apt: upgrade=dist
+
+# - name: Install dependencies
+#   apt:
+#     name: "{{ packages }}"
+#     state: present
+#     update_cache: yes
+#   vars:
+#     packages:
+#     - apt-transport-https
+#     - ca-certificates
+#     - curl
+#     - software-properties-common
+#     - gnupg-agent
+  
+# - name: Add an apt signing key for Docker
+#   apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
+
+# - name: Add apt repository for stable version
+#   apt_repository:
+#     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+#     state: present
+
+# - name: Install Docker
+#   apt:
+#     name: "{{ packages }}"
+#     state: present
+#     update_cache: yes
+#   vars:
+#     packages:
+#     - docker-ce
+#     - docker-ce-cli 
+#     - containerd.io
+
+# - name: Add user to docker group
+#   user:
+#     name: "{{ansible_user}}"
+#     group: docker
+
+# - name: Download docker-compose {{ docker_compose_version }}
+#   get_url:
+#     url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+#     dest: ~/docker-compose
+#     mode: '+x'
+
+# - name: Check docker-compose exists
+#   stat: path=~/docker-compose
+#   register: docker_compose
+
+# - name: Move docker-compose to /usr/local/bin/docker-compose
+#   command: mv ~/docker-compose /usr/local/bin/docker-compose
+#   when: docker_compose.stat.exists
+# - name: Auto Start docker service
+#   service:
+#     name: docker
+#     enabled: true
+- name: Create nginx container
+  docker_container:
+    name: nginx
+    # image: nivjain/nginx:v1
+    image: nginx
+    state: started
+    recreate: yes
+    published_ports:
+      # - "{{ nginx_container_port }}:{{ nginx_port }}"
+      - "8080:80"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ---  
+# - name: Update apt cache
+#   apt: update_cache=yes cache_valid_time=3600
+
+# - name: Upgrade all apt packages
+#   apt: upgrade=dist
+
+# - name: Install dependencies
+#   apt:
+#     name: "{{ packages }}"
+#     state: present
+#     update_cache: yes
+#   vars:
+#     packages:
+#     - apt-transport-https
+#     - ca-certificates
+#     - curl
+#     - software-properties-common
+#     - gnupg-agent
+  
+# - name: Add an apt signing key for Docker
+#   apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
+
+# - name: Add apt repository for stable version
+#   apt_repository:
+#     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+#     state: present
+
+# - name: Install Docker
+#   apt:
+#     name: "{{ packages }}"
+#     state: present
+#     update_cache: yes
+#   vars:
+#     packages:
+#     - docker-ce
+#     - docker-ce-cli 
+#     - containerd.io
+
+# - name: Add user to docker group
+#   user:
+#     name: "{{ansible_user}}"
+#     group: docker
+
+# - name: Download docker-compose {{ docker_compose_version }}
+#   get_url:
+#     url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+#     dest: ~/docker-compose
+#     mode: '+x'
+
+# - name: Check docker-compose exists
+#   stat: path=~/docker-compose
+#   register: docker_compose
+
+# - name: Move docker-compose to /usr/local/bin/docker-compose
+#   command: mv ~/docker-compose /usr/local/bin/docker-compose
+#   when: docker_compose.stat.exists
+# - name: Auto Start docker service
+#   service:
+#     name: docker
+#     enabled: true
+# - name: Create nginx container
+#   docker_container:
+#     name: nginx
+#     # image: nivjain/nginx:v1
+#     image: nginx
+#     state: started
+#     recreate: yes
+#     published_ports:
+#       - "{{ nginx_container_port }}:{{ nginx_port }}"
+#       # - "8080:80"
+
+# # # - name: Ensure Nginx is at the latest version
+# # #   apt:
+# # #     name: nginx
+# # #     state: latest
+# # # - name: Make sure Nginx is running
+# # #   systemd:
+# # #     state: started
+# # #     name: nginx
+
+
+# # ---
+# # - name: Ensure Nginx is at the latest version
+# #   apt:
+# #     name: nginx
+# #     state: latest
+# # - name: Make sure Nginx is running
+# #   systemd:
+# #     state: started
+# #     name: nginx
