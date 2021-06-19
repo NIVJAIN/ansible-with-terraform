@@ -3,7 +3,7 @@ vamakp.pem
 vamakp*
 ***vamakp.pem
 *.terraform
-*terra*
+# *terra*
 ***.pem
 /ansible/*.pem
 /launch_ec2/*.pem
