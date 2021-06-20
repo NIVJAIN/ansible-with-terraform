@@ -1,4 +1,5 @@
 ## Project scope
+![Alt text](./architecture.drawio.png)
 ```
 1. Deploy ec2 instance
 2. create ALB loadbalancer
