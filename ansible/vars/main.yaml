@@ -1,0 +1,69 @@
+# # vars/main.yml
+
+# # Name of the SSH key (e.g. git_ssh_key)
+# KEY_TITLE: <name of the SSH key>
+
+# # Location of the SSH key to be (e.g. ~/.ssh/id_rsa_git)
+# KEY_PATH: /path/to/ssh/key
+
+# # # GitHub personal access token
+# GITHUB_ACCESS_TOKEN: !vault |
+#           $ANSIBLE_VAULT;1.1;AES256
+#           65383838323338333239343436363535623433363338643533333337633533313763626530383734
+#           6161633930356662313061663634336564633562623739620a656566623139303962386661633836
+#           32393065356632353630323234633639356533326338636237353365386164333364336461333665
+#           3731386366353863640a636536633066393337653030326439386362353035363636353833326334
+#           31383362656533353066326661396162646463633065353136613932663439326438353131363936
+#           3336316562373233313963326538386361363563613861323635
+# Encryption successful
+
+# # Git repository to be cloned. Must be SSH (not https)
+# GIT_REPO: ssh://git@github.com/path/to/repository.git
+
+# # Branch of the git repository (e.g. master)
+# GIT_BRANCH: <repository branch>
+
+# # Directory where the repository will be cloned (e.g. /home/user/repo_name)
+# CLONE_DEST: /path/to/clone/directory
+
+# # Location of the SSH known hosts file (e.g. ~/.ssh/known_hosts)
+# KNOWN_HOSTS_PATH: /path/to/ssh/known_hosts/file
+
+# # Location of the git binary (e.g. /usr/bin/git)
+# GIT_EXECUTABLE: /path/to/git/executable
+
+# # Github FQDN
+# GIT_SERVER_FQDN: github.com
+
+
+nginx_container_port: "8080"
+nginx_port: "80"
+docker_compose_version: "1.27.4"
+ansible_user: "ubuntu"
+default_container_image: nginx
+# playbook_dir: 
+# docker_remote_app_dir: /tmp/helloworld
+docker_remote_app_dir: /home/ubuntu/nginx-docker-compose
+rabbitmq_cluster_dir: /home/ubuntu/rabbitmq-cluster_docker_compose
+node_mongo_docker: /home/ubuntu/node-mongo-docker
+# Name of the SSH key (e.g. git_ssh_key)
+KEY_TITLE: ansbile_key
+# Location of the SSH key to be (e.g. ~/.ssh/id_rsa_git)
+KEY_PATH: ~/.ssh/id_rsa.git
+GIT_REPO: ssh://git@github.com/ansible-with-terraform.git
+# GIT_REPO: https://github.com/NIVJAIN/ansible-with-terraform.git
+CLONE_DEST: /home/ubuntu/ansible-with-terraform
+# # Location of the git binary (e.g. /usr/bin/git)
+GIT_EXECUTABLE: /usr/bin/git
+KNOWN_HOSTS_PATH: ~/.ssh/known_hosts
+GIT_SERVER_FQDN: github.com
+GIT_BRANCH: master
+GITHUB_ACCESS_TOKEN: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      65383838323338333239343436363535623433363338643533333337633533313763626530383734
+      6161633930356662313061663634336564633562623739620a656566623139303962386661633836
+      32393065356632353630323234633639356533326338636237353365386164333364336461333665
+      3731386366353863640a636536633066393337653030326439386362353035363636353833326334
+      31383362656533353066326661396162646463633065353136613932663439326438353131363936
+      3336316562373233313963326538386361363563613861323635
+# Encryption successful

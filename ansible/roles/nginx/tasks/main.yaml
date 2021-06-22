@@ -1,157 +1,123 @@
 ---
-- name: Just Execute a command
-  command: date
+
+# - name: Clone a public git repository
+#   git:
+#     repo: 'https://github.com/NIVJAIN/ansible-with-terraform.git' # its a private repo and it doesnt work
+#     # repo: 'https://github.com/NIVJAIN/nodejs-mongo.git' # it is public repo and it works
+#     dest: /home/ubuntu/nodejs-mongo
+#     # version: release-0.22
+#   register: "output"
+# - debug: var=output.stdout_lines  #FHLZR05TMLF1
+
+
+- name: Just Execute a command to get KEY_PATH
+  command: echo {{ KEY_PATH }}
   register: "output" 
 - debug: var=output.stdout_lines
 
-- name: "just execute a ls -lrt command"
-  shell: "ls -lrta"
+# tasks/main.yml   
+- name: Check if ssh key is already present
+  stat:
+    path: "{{ KEY_PATH }}"
+  register: key_stat_result
+
+- name: Generate SSH key for accessing GitHub
+  command: "ssh-keygen -t rsa -f {{ KEY_PATH }} -N ''"
+  when: not key_stat_result.stat.exists
   register: "output"
-
-- name: Install required system packages
-  apt: name={{ item }} state=latest update_cache=yes
-  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
-
-- name: Add an apt signing key for Docker
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- name: Add apt repository for stable version
-  apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-    state: present
-
-- name: Install Docker
-  apt:
-    name: "{{ packages }}"
-    state: present
-    update_cache: yes
-  vars:
-    packages:
-    - docker-ce
-    - docker-ce-cli 
-    - containerd.io
-
-- name: Install Docker SDK for Python
-  pip:
-    name: "docker" 
-  become: yes
-
-- name: Download docker-compose {{ docker_compose_version }}
-  get_url:
-    url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
-    dest: ~/docker-compose
-    mode: '+x'
-
-- name: Check docker-compose exists
-  stat: path=~/docker-compose
-  register: docker_compose
-
-- name: Move docker-compose to /usr/local/bin/docker-compose
-  command: mv ~/docker-compose /usr/local/bin/docker-compose
-  when: docker_compose.stat.exists
-
-# sudo systemctl enable docker
-- name: Start docker on boot
-  systemd:
-    name: docker
-    state: started
-    enabled: yes
-
-- name: Add user to docker group
-  user:
-    name: "{{ansible_user}}"
-    group: docker
-
-
-- name: install nodejs prerequisites
-  apt:
-    name:
-      - apt-transport-https
-      - gcc
-      - g++
-      - make
-    state: present
-- name: add nodejs apt key
-  apt_key:
-    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-    state: present
-- name: add nodejs repository
-  apt_repository:
-    repo: deb https://deb.nodesource.com/node_16.x {{ ansible_lsb.codename }} main
-    state: present
-    update_cache: yes
-- name: install nodejs
-  apt:
-    name: nodejs
-    state: present
-
-# - name: Pull default Docker image
-#   docker_image:
-#     name: "{{ default_container_image }}"
-#     source: pull
-
-# - name: Install Nginx
-#   docker_container:
-#     name: nginx
-#     image: nginx
-#     detach: True
-#     ports:
-#       - "8080:80"
-#     expose:
-#       - "8080"
-#     # volumes:
-#       # - /etc/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-
-#  "/Users/blockchain/TAMATAR/ANSIBLE/terraform_ec2_ansible/docker/"
-- name: Just Execute a command
-  command: echo "{{ playbook_dir }}/../docker/"
-  # command: ls -rtl "{{ playbook_dir }}/"
-  register: "output" 
 - debug: var=output.stdout_lines
 
-# # cp ~/terraform-ec2-ansible/docker/../docker/* /tmp/helloworld
-- name: Copy multiple files in Ansible with different permissions
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "{{item.mode}}"
-  with_items:
-    - { src: '{{ playbook_dir }}/docker/',dest: '{{ docker_remote_app_dir }}', mode: '0777'}
-    - { src: '{{ playbook_dir }}/rabbitmq-cluster_docker_compose/',dest: '{{ rabbitmq_cluster_dir }}', mode: '0777'}
-    - { src: '{{ playbook_dir }}/node-mongo-docker/',dest: '{{ node_mongo_docker }}', mode: '0777'}
-    # - { src: '{{ playbook_dir }}/docker/',dest: '{{ docker_remote_app_dir }}', mode: '0707'}
-    # - { src: '{{ playbook_dir }}/docker/',dest: '{{ docker_remote_app_dir }}', mode: '0575'}
-  tags:
-    - app
+- name: Get key content
+  command: "cat {{ KEY_PATH }}.pub"
+  register: key_content
+
+
+- name: Check if known_host exists
+  stat:
+    path: "{{ KNOWN_HOSTS_PATH }}"
+  register: known_hosts_stat
+
+- name: Create known_hosts if it doesn't exist
+  file:
+    path: "{{ KNOWN_HOSTS_PATH }}"
+    state: touch
+  when: not known_hosts_stat.stat.exists
+
+- name: Get the content of known hosts
+  shell: "cat {{ KNOWN_HOSTS_PATH }} | grep {{ GIT_SERVER_FQDN }}"
+  register: host_stat
+  failed_when: host_stat.rc > 1
+
+
+- name: Modify known hosts
+  block:
+  - name: Fetch GitHub public key
+    command: "ssh-keyscan -T 10 {{ GIT_SERVER_FQDN }}"
+    register: keyscan
+
+  - name: Add GitHub public key to ssh known_hosts
+    lineinfile:
+      path: "{{ KNOWN_HOSTS_PATH }}"
+      create: yes
+      line: "{{ item }}"
+    with_items: '{{ keyscan.stdout_lines }}'
+  when: host_stat.rc == 1
+
+- name: Add SSH public key to GitHub account
+  uri:
+    url: "https://api.{{ GIT_SERVER_FQDN }}/user/keys"
+    validate_certs: no
+    method: POST
+    body:
+      title: "{{ KEY_TITLE }}"
+      key: "{{ key_content.stdout }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      Authorization: "token {{ GITHUB_ACCESS_TOKEN }}"
+    status_code:
+    - 201
+    - 422
+
+
+
+
+- name: Configure SSH agent and clone repository
+  block:
+  - name: Remove old repository
+    file:
+      path: "{{ CLONE_DEST }}"
+      state: absent
+
+  - name: Add SSH key to SSH agent
+    shell: |
+      eval $(ssh-agent -s)
+      ssh-add {{ KEY_PATH }}
+
+  - name: Clone a public git repository
+    git:
+      # repo: 'https://github.com/NIVJAIN/ansible-with-terraform.git' # its a private repo and it doesnt work
+      # repo: 'https://github.com/NIVJAIN/nodejs-mongo.git' # it is public repo and it works
+      repo: 'ssh://git@github.com/ansible-with-terraform.git'
+      dest: /home/ubuntu/nodejs-mongo
+      register: "output" 
+  - debug: var=output.stdout_lines
+  - name: echo clone command
+    command: echo "ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git clone {{ GIT_REPO }} {{ CLONE_DEST }}
+    register: "output"
+  - debug: var=output.stdout_lines
+  - name: Clone the repository
+    shell: GIT_SSH_COMMAND="ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git clone {{ GIT_REPO }} {{ CLONE_DEST }}
+    become_user: root
+    # shell: GIT_SSH_COMMAND="ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" {{ GIT_EXECUTABLE }} clone {{ GIT_REPO }} {{ CLONE_DEST }}
   
-# cd /tmp/helloworld/ && docker-compose up -d --build
-- name: Rebuild images defined in compose file and restart containers whose images have changed
-  command: docker-compose up -d --build
-  args:
-    chdir: "{{ docker_remote_app_dir }}"
-  tags:
-    - app
 
-# Build rabbitmq cluster 3.0.19.7:15672 rabbbitmq management server loginuser:guest guest:guest pw:guest. 
-- name: Rebuild images defined in compose file and restart containers whose images have changed
-  command: docker-compose up -d --build
-  args:
-    chdir: "{{ rabbitmq_cluster_dir }}/cluster_conf"
-  tags:
-    - app
+  - name: Switch branch 
+    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+    args:
+      chdir: "{{ CLONE_DEST }}"
 
-# Build rabbitmq cluster 3.0.19.7:15672 rabbbitmq management server loginuser:guest guest:guest pw:guest. 
-- name: Run node-mongo-dir docker-compose fiel
-  command: docker-compose up -d --build
-  args:
-    chdir: "{{ node_mongo_docker }}"
-  tags:
-    - app
-  register: "output" 
-- debug: var=output.stdout_lines
-
+  always:
+  - name: Kill the ssh-agent
+    shell: export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
 

@@ -53,3 +53,12 @@
 11. [ ] incomplete
 12. [x] completed
 13. [x] convert host2 variable to maps
+
+## Ansible vaults
+```
+ echo "your-pass-phrase" | openssl aes-256-cbc -a -salt > ansible_vault.pass
+ ansible-vault encrypt_string '<your_github_access_token>' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/path/to/password/file​
+ ansible-vault encrypt_string 'kdkdkdk' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/Users/blockchain/TAMATAR/TERRAFORM/ansible-with-terraform/ansible/ansible_vault.pass
+ export ANSIBLE_VAULT_PASSWORD_FILE=/Users/blockchain/TAMATAR/TERRAFORM/ansible-with-terraform/ansible/ansible_vault.pass
+
+```

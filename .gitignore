@@ -10,3 +10,4 @@ vamakp*
 /launch_ec2/*.terr
 /launch_ec2/.ter*
 /orig_launch_ec2/*.pem
+/ansible/ansible_vault.pass
