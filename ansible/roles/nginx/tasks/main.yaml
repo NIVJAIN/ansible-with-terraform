@@ -174,10 +174,12 @@
   stat:
     path: "{{ KEY_PATH }}"
   register: key_stat_result
+  become_user: ubuntu
 
 # KEY_PATH: ~/.ssh/id_rsa.git
 - name: Generate SSH key for accessing GitHub
   command: "ssh-keygen -t rsa -f {{ KEY_PATH }} -N ''"
+  become_user: ubuntu
   when: not key_stat_result.stat.exists
   register: "output"
 - debug: var=output.stdout_lines
@@ -185,6 +187,7 @@
 - name: Get key content
   command: "cat {{ KEY_PATH }}.pub"
   register: key_content
+  become_user: ubuntu
   # register: "output"
 # - debug: var=output.stdout_lines
 
@@ -193,11 +196,13 @@
   stat:
     path: "{{ KNOWN_HOSTS_PATH }}"
   register: known_hosts_stat
+  become_user: ubuntu
 
 - name: Create known_hosts if it doesn't exist
   file:
     path: "{{ KNOWN_HOSTS_PATH }}"
     state: touch
+  become_user: ubuntu
   when: not known_hosts_stat.stat.exists
 
 - name: Get the content of known hosts
@@ -207,6 +212,7 @@
 
 
 - name: Modify known hosts
+  become_user: ubuntu
   block:
   - name: Fetch GitHub public key
     command: "ssh-keyscan -T 10 {{ GIT_SERVER_FQDN }}"

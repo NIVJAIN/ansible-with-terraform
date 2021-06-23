@@ -36,7 +36,7 @@ resource "aws_instance" "nginx" {
  tags = merge(
     var.default_tags,
     {
-     Name = "{var.project_name}-EC2"
+     Name = "${var.project_name}-EC2"
     }
   )
   lifecycle {
