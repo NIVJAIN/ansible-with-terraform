@@ -50,7 +50,8 @@ node_mongo_docker: /home/ubuntu/node-mongo-docker
 KEY_TITLE: ansbile_key
 # Location of the SSH key to be (e.g. ~/.ssh/id_rsa_git)
 KEY_PATH: ~/.ssh/id_rsa.git
-GIT_REPO: ssh://git@github.com/ansible-with-terraform.git
+# GIT_REPO: ssh://git@github.com/ansible-with-terraform.git #this will not work
+GIT_REPO: ssh://git@github.com/NIVJAIN/ansible-with-terraform.git
 # GIT_REPO: https://github.com/NIVJAIN/ansible-with-terraform.git
 CLONE_DEST: /home/ubuntu/ansible-with-terraform
 # # Location of the git binary (e.g. /usr/bin/git)

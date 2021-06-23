@@ -1,14 +1,15 @@
 ## Project scope
 ![Alt text](./architecture.drawio.png)
 ```
+0. Crearte Ansible vaults
 1. Deploy ec2 instance
 2. create ALB loadbalancer
 3. create NLB loadbalancer
 4. Create security groups for ALB, NLB and for EC2
 5. ALB load balancer open ports 80 & 443
-6. Terraform will perfrom ALB host forwardning to rabbitmq.aipo-imda.net , nodeapp.aipo-imda.net, service.aipo-imda.net
-7. Terraform wiill update route53 records in AWS for item 6.
-8. Terraform state management will be stored in s3 bucket.
+6. ALB host forwardning to rabbitmq.aipo-imda.net , nodeapp.aipo-imda.net, service.aipo-imda.net
+7. Update route53 records in AWS for item 6.
+8. Store Terraform state management will be stored in s3 bucket.
 9. Also take note donot git commit pem files to git repo. use .gitignore to ignore pem files.
 ```
 
@@ -56,9 +57,19 @@
 
 ## Ansible vaults
 ```
- echo "your-pass-phrase" | openssl aes-256-cbc -a -salt > ansible_vault.pass
- ansible-vault encrypt_string '<your_github_access_token>' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/path/to/password/file​
- ansible-vault encrypt_string 'kdkdkdk' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/Users/blockchain/TAMATAR/TERRAFORM/ansible-with-terraform/ansible/ansible_vault.pass
- export ANSIBLE_VAULT_PASSWORD_FILE=/Users/blockchain/TAMATAR/TERRAFORM/ansible-with-terraform/ansible/ansible_vault.pass
+1. login to your github account
+2. then goto https://github.com/settings/tokens 
+3. Generate new token and use that token below
+4. echo "your-pass-phrase" | openssl aes-256-cbc -a -salt > ansible_vault.pass
+5. ansible-vault encrypt_string '<your_github_access_token>' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/path/to/password/file​
+    e.g. ansible-vault encrypt_string 'githubtoken' --name 'GITHUB_ACCESS_TOKEN' --vault-password-file=/Users/blockchain/TAMATAR/TERRAFORM ansible-with-terraform/ansible/ansible_vault.pass
+6. export ANSIBLE_VAULT_PASSWORD_FILE=/Users/blockchain/TAMATAR/TERRAFORM/ansible-with-terraform/ansible/ansible_vault.pass
+
+```
+
+## Cloing private repo steps
+```
+
+
 
 ```
